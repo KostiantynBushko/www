@@ -1,0 +1,1 @@
+<?php return unserialize('C:5:"ARSet":312:{a:1:{s:4:"data";a:1:{i:0;C:8:"Language":264:{a:3:{s:4:"data";a:4:{s:2:"ID";C:13:"ARValueMapper":9:{s:2:"en";}s:9:"isEnabled";C:13:"ARValueMapper":8:{s:1:"1";}s:9:"isDefault";C:13:"ARValueMapper":8:{s:1:"1";}s:8:"position";C:13:"ARValueMapper":8:{s:1:"0";}}s:8:"isLoaded";b:1;s:19:"customSerializeData";a:0:{}}}}}}'); ?>

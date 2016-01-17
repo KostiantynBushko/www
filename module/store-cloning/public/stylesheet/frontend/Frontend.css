@@ -1,0 +1,19 @@
+#mirror-container
+{
+    background-color: rgba(0, 0, 0, 0.3);
+    height: 100%;
+    left: 0;
+    padding-top: 50px;
+    position: fixed;
+    text-align: center;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+#mirror-indicator
+{
+	font-size: 72px;
+	color: white;
+	margin-top: 30%;
+}

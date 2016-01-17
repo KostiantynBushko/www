@@ -1,0 +1,3 @@
+RewriteEngine on
+#RewriteBase /public/
+RewriteRule ^upload/productimage/(.*)(\-)([0-9]+\-[0-9]+\-[0-9]+)\.jpg$ upload/productimage/$3.jpg [L]

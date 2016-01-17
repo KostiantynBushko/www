@@ -1,0 +1,55 @@
+<div id="header">
+
+	<div id="topMenuContainer">
+		{block CART}
+	</div>
+	<div class="clear"></div>
+
+		
+	<div id="logoContainer">
+		<a href="{link}"><center>{img src='LOGO'|config alt="Illuminata Logo"}</center></a>
+	</div>
+
+		
+
+	<div class="clear"></div>
+
+	{block HEADER}
+
+	{*block BREADCRUMB*}
+
+</div>
+
+<div class="clear"></div>
+<div class="menu">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/aboutUs.html">About Us</a></li>
+                    <li><a href="/hours.html">Hours</a></li>
+                    <li><a href="/contact">Contact Us</a></li>
+                    <li><a href="/shippingPolicyFees.html">Shipping rates</a></li>
+                    <li><a href="/promotionsCoupons.html">Pomotions</a></li>
+                </ul>
+</div>
+            <div class="clear"></div>
+            
+<div class="nav">
+	{block SEARCH}
+	{block ROOT_CATEGORIES}
+</div>
+
+{if $request.controller == 'index'}
+	{include file="layout/frontend/banners.tpl"}
+{/if}
+
+{literal}
+<script>
+	jQuery(function(){
+		if ( jQuery(window).width() <= 320 ) {
+			jQuery('#cart .cartListTitle, #cart .ttl, #cart .subTotalCaption').attr('colspan', 2);
+		}
+		
+	});
+
+</script>
+{/literal}

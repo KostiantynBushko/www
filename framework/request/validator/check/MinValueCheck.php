@@ -1,0 +1,29 @@
+<?php
+
+/**
+ * 
+ * @package framework.request.validator.check
+ * @author Integry Systems 
+ */
+class MinValueCheck extends Check
+{
+	public function __construct($violationMsg, $minValue)
+	{
+		parent::__construct($violationMsg);
+		$this->setParam("minValue", $minValue);
+	}
+	
+	public function isValid($value)
+	{
+		if ($value >= $this->getParam("minValue"))
+		{
+			return true;
+		}
+		else 
+		{
+			return false;
+		}
+	}
+}
+
+?>

@@ -1,0 +1,64 @@
+.cell_ClonedStore_domain
+{
+	width: 100% !important;
+}
+
+ul.menu li
+{
+	padding: 0;
+}
+
+a.delete, a.moveUp, a.moveDown
+{
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	background-image: url('../../../../image/silk/delete.png');
+}
+
+a.moveUp
+{
+	background-image: url('../../../../image/silk/arrow_up.png');
+}
+
+a.moveDown
+{
+	background-image: url('../../../../image/silk/arrow_down.png');
+}
+
+.rule span
+{
+	margin-right: 1em;
+}
+
+.sqlRulesContent textarea,
+.tabTextRulesContent textarea
+{
+	height: 32px;
+	vertical-align: middle;
+}
+
+.tabTextRulesContent fieldset.container
+{
+	display: inline-block;
+	vertical-align: top;
+}
+
+.tabTextRulesContent label
+{
+	width: 90px;
+}
+
+#textRuleTemplate
+{
+	border-bottom: 1px solid #ccc;
+	padding-bottom: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+span.hint
+{
+	font-size: 0.7em;
+	display: block;
+	margin-bottom: 10px;
+}

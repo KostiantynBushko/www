@@ -1,0 +1,1 @@
+<div class="compareIcon"><a href="{link compare/add id=$product.ID returnPath=true}" onclick="Compare.add(event)" class="addToCompare tooltip" title="Add To Compare"><span title="More"><img src="upload/theme/IlluminataV3/compareicon.png" /></span></a></div>

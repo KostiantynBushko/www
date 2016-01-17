@@ -1,0 +1,4 @@
+<?php $languageDefs = array (
+  'SaferPay_ACCOUNTID' => 'Account ID',
+  'SaferPay_DESCRIPTION' => 'Short description to display at SaferPay payment page',
+); ?>

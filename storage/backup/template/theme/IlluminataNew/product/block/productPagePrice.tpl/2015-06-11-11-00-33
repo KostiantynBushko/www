@@ -1,0 +1,6 @@
+<span class="realPrice" style="color: green;">{$product.formattedPrice.$currency}</span>
+{if $product.formattedListPrice.$currency}
+	<span class="listPrice" style="color: green; position: relative; left:0;">
+		{$product.formattedListPrice.$currency}
+	</span>
+{/if}

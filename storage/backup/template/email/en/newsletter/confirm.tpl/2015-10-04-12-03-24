@@ -1,0 +1,55 @@
+Exciting News from {'STORE_NAME'|config}!
+{if !$html}
+Hello,
+
+We are so exited to announce the launch of our new website, online store and a newsletter!
+
+At our website you can now browse entire catalogs of the brands that we carry at our optical store, order online or share the glasses that you like with your friends!
+You can also sign up for an eye exam online and see our optometrist's schedule. This makes us the largest fashion brand name online glasses store in Ontario! 
+
+We operate in a high fashion industry and carry most of world's best eyeglasses brands. Prada, Bvlgari, Tom Ford, Tiffany, Gucci, Dior plus 40 more famous and niche brands.
+With the help of our new website, we will be sharing with you interesting news and trends as they are happening in the fashion world. We promise to e-mail you only when there is something exciting to share!
+
+To make things more interesting, we some times have limited time offers, promotions and coupons.
+
+We are looking forward to service your vision needs.
+
+We would like to invite you to join our Facebook page and would appreciate your share to help us grow our business:
+https://www.facebook.com/IlluminataEyewear
+
+We are looking forward to seeing you soon at our store!
+
+
+{include file="email/en/signature.tpl"}
+
+-----------------------------------------------
+If you do not want to receive any more newsletter messages from us, please visit the link below to remove yourself from our mailing list:
+<a href="{link controller=newsletter action=unsubscribe query="email=`$email`" url=true}">Unsubscribe</a>
+{/if}{*html*}
+{if $html}
+Hello,
+
+We are so exited to announce the launch of our <a href="http://www.illuminataeyewear.com">new website</a>, online store and a newsletter!
+
+At our website you can now browse entire catalogs of the brands that we carry at our optical store, order online or share the glasses that you like with your friends!
+You can also sign up for an eye exam online and see our <a href="http://www.illuminataeyewear.com/EyeExam">optometrist's schedule</a>. This makes us the largest fashion brand name online glasses store in Ontario! 
+
+We operate in a high fashion industry and carry most of world's best eyeglasses brands. Prada, Bvlgari, Tom Ford, Tiffany, Gucci, Dior plus 40 more famous and niche brands.
+With the help of our new website, we will be sharing with you interesting news and trends as they are happening in the fashion world. We promise to e-mail you only when there is something exciting to share!
+
+To make things more interesting, we some times have limited time offers, promotions and coupons.
+
+We are looking forward to service your vision needs.
+
+We would like to invite you to join our Facebook page and would appreciate your share to help us grow our business:
+<a href="https://www.facebook.com/IlluminataEyewear">https://www.facebook.com/IlluminataEyewear</a>
+
+We are looking forward to seeing you soon at our store!
+
+
+{include file="email/en/signature.tpl"}
+
+-----------------------------------------------
+If you do not want to receive any more newsletter messages from us, please visit the link below to remove yourself from our mailing list:
+<a href="{link controller=newsletter action=unsubscribe query="email=`$email`" url=true}">Unsubscribe</a>
+{/if}{*html*}

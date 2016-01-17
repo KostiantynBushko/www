@@ -1,0 +1,77 @@
+{if $product.longDescription_lang || $product.shortDescription_lang}
+<div id="descriptionSection" class="productSection description">
+	<h2>{t _description}</h2>
+	<div id="productDescription">
+		{if $product.longDescription_lang}
+			{$product.longDescription_lang}
+		{else}
+			{$product.shortDescription_lang}
+		{/if}
+	</div>
+</div>
+{/if}
+
+{*if $product.attributes}
+<div id="specificationSection" class="productSection specification">
+<h2>{t _spec}<small>{t _tab_specification}</small></h2>
+<div id="productSpecification">
+	<table class="productDetailsTable">
+		{include file="product/specificationTableBody.tpl" attributes=$product.attributes field=SpecField group=SpecFieldGroup}
+	</table>
+</div>
+</div>
+{/if*}
+
+{if $related}
+<div id="relatedSection" class="productSection related">
+<h2>{t _recommended}<small>{t _tab_recommended}</small></h2>
+<div id="relatedProducts">
+	{foreach from=$related item=group}
+	   {if $group.0.ProductRelationshipGroup.name_lang}
+		   <h3>{$group.0.ProductRelationshipGroup.name_lang}</h3>
+	   {/if}
+	   {include file="category/productListLayout.tpl" layout='PRODUCT_PAGE_LIST_LAYOUT'|config products=$group}
+	{/foreach}
+</div>
+</div>
+{/if}
+
+{*if $additionalCategories}
+	{include file="product/block/additionalCategories.tpl"}
+{/if*}
+
+{if $together}
+<div id="purchasedTogetherSection" class="productSection purchasedTogether">
+<h2>{t _purchased_together}<small>{t _tab_purchased}</small></h2>
+<div id="purchasedTogether">
+	{include file="category/productListLayout.tpl" layout='PRODUCT_PAGE_LIST_LAYOUT'|config products=$together}
+</div>
+</div>
+{/if}
+
+{literal}
+		<!-- AddThis Smart Layers BEGIN -->
+<!-- Go to http://www.addthis.com/get/smart-layers to customize -->
+
+<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=xa-5277150f0ea19ad7"></script>
+
+
+<script type="text/javascript">
+  addthis.layers({
+    'theme' : 'transparent',
+    'share' : {
+      'position' : 'left',
+      'numPreferredServices' : 5
+    }, 
+    'follow' : {
+      'services' : [
+        {'service': 'twitter', 'id': 'trendeyewear'}
+      ]
+    }   
+  });
+</script>
+
+<!-- AddThis Smart Layers END -->
+
+		
+		{/literal}

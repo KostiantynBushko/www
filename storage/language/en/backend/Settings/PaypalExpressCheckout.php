@@ -1,0 +1,8 @@
+<?php $languageDefs = array (
+  'PaypalExpressCheckout' => 'Paypal Express Checkout',
+  'PaypalExpressCheckout_sandbox' => 'Use sandbox (test) environment',
+  'PaypalExpressCheckout_username' => 'Username',
+  'PaypalExpressCheckout_password' => 'Password',
+  'PaypalExpressCheckout_signature' => 'Signature',
+  'PaypalExpressCheckout_AUTHONLY' => 'Only authorize payments without capturing them automatically',
+); ?>

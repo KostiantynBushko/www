@@ -1,0 +1,35 @@
+<h3><a href="{newsUrl news=$entry}">{$entry.title_lang}</a></h3>
+<div class="newsDate">{$entry.formatted_time.date_medium}</div>
+<div>{$entry.text_lang}</div>
+{if $entry.moreText_lang}
+	<div class="newsReadMore">
+		<center><a href="{newsUrl news=$entry}" class="hvr-sweep-to-left">{t _read_more}</a></center>
+	</div>
+{/if}
+
+{literal}
+		<!-- AddThis Smart Layers BEGIN -->
+<!-- Go to http://www.addthis.com/get/smart-layers to customize -->
+
+<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=xa-5277150f0ea19ad7"></script>
+
+
+<script type="text/javascript">
+  addthis.layers({
+    'theme' : 'transparent',
+    'share' : {
+      'position' : 'left',
+      'numPreferredServices' : 5
+    }, 
+    'follow' : {
+      'services' : [
+        {'service': 'twitter', 'id': 'trendeyewear'}
+      ]
+    }   
+  });
+</script>
+
+<!-- AddThis Smart Layers END -->
+
+		
+		{/literal}

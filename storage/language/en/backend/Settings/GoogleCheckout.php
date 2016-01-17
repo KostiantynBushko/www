@@ -1,0 +1,7 @@
+<?php $languageDefs = array (
+  'GoogleCheckout' => 'Google Checkout',
+  'GoogleCheckout_sandbox' => 'Use sandbox (test) environment',
+  'GoogleCheckout_merchant_id' => 'Merchant ID',
+  'GoogleCheckout_merchant_key' => 'Merchant key',
+  'GoogleCheckout_coupons' => 'Allow entering coupon codes at Google Checkout',
+); ?>

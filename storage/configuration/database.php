@@ -1,0 +1,1 @@
+<?php return 'mysql://illumin_user:Cloning123!@localhost/illumin_db'; ?>

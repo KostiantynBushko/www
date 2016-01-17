@@ -1,0 +1,7 @@
+<?php $languageDefs = array (
+  'DibsFlexWin' => 'DIBS FlexWin',
+  'DibsFlexWin_merchant' => 'Merchant number',
+  'DibsFlexWin_md51' => 'Shop key 1',
+  'DibsFlexWin_md52' => 'Shop key 2',
+  'DibsFlexWin_test' => 'Test mode',
+); ?>

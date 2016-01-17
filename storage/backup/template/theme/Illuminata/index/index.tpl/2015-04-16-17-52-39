@@ -1,0 +1,101 @@
+{pageTitle}{'STORE_HEADLINE'|config}{/pageTitle}
+{assign var="metaDescription" value='INDEX_META_DESCRIPTION'|config}
+{assign var="metaKeywords" value='INDEX_META_KEYWORDS'|config}
+<div class="index">
+{include file="layout/frontend/layout.tpl"}
+<div id="content">
+
+
+
+<div class="slider">
+			<ul class="slides">
+				<li class="slide">
+				<div style="background-image: url(upload/theme/Illuminata/IlluminataLarge.gif);">
+<h1>Unique Optical Boutique</h1>
+<em>Serving You Since 1996</em>
+<a href="">Learn more</a>
+</div>
+</li><li class="slide">
+				<div style="background-image: url(upload/theme/Illuminata/IlluminataLarge.gif);">
+<h1>Widest Product Selection</h1>
+<em>Eyeglasses from top brands</em>
+<a href="">Learn more</a>
+</div>
+</li><li class="slide"> 
+<div style="background-image: url(upload/theme/Illuminata/IlluminataLarge.gif);">
+<h1>Focus on Your Style and Needs</h1>
+<em>Hightly trained optician staff</em>
+<a href="">Shop online or in store</a>
+</div>
+</li><li class="slide">
+<div style="background-image: url(upload/theme/Illuminata/IlluminataLarge.gif);">
+<h1>Eye Exams Arranged</h1>
+<em>Vision is Light</em>
+<a href="">Book an eye exam</a>
+</div></li>	
+			</ul>
+		</div>
+		{literal}
+		<script type="text/javascript">
+		jQuery( document ).ready(function() {
+		var glide = jQuery('.slider').glide().data('api_glide');
+
+				$(window).on('keyup', function (key) {
+					if (key.keyCode === 13) {
+						glide.jump(3, console.log('Wooo!'));
+					};
+				});
+
+				jQuery('.slider-arrow').on('click', function() {
+					console.log(glide.current());
+				});
+				});
+		</script>
+{/literal}
+
+
+
+<h1>Every frame is unique</h1>
+<div class="sub-text">
+<p>Genuine horn eyeglasses are hypoallergenic, timeless and environmently friendly.
+Every glasses frame made out of horn is unique in color and pattern variation.
+Horn material is extremely durable and strong.
+<a href="">Learn more about Horn Eyeglasses</a>
+</p>
+</div>
+
+	{block HOME-PAGE-TOP}
+
+	{*if 'HOME_PAGE_SUBCATS'|config}
+		{include file="category/subcategoriesColumns.tpl"}
+	{/if*}
+
+	{*if $news}
+		<h2>{t _latest_news}</h2>
+		<ul class="news">
+		{foreach from=$news item=newsItem name="news"}
+			{if !$smarty.foreach.news.last || !$isNewsArchive}
+				<li class="newsEntry">
+					{include file="news/newsEntry.tpl" entry=$newsItem}
+				</li>
+			{else}
+				<div class="newsArchive">
+					<a href="{link controller=news}">{t _news_archive}</a>
+				</div>
+			{/if}
+		{/foreach}
+		</ul>
+	{/if*}
+
+	{if $subCatFeatured}
+		<h2>Shop Our Collection</h2>
+		{include file="category/productListLayout.tpl" layout='FEATURED_LAYOUT'|config|default:$layout products=$subCatFeatured}
+	{/if}
+
+	{include file="category/categoryProductList.tpl"}
+
+</div>
+
+{include file="layout/frontend/footer.tpl"}
+
+</div>

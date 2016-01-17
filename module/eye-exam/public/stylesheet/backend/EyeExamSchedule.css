@@ -1,0 +1,75 @@
+#eyeExamMenu li.addEyeExamSchedule
+{
+    background-image: url('../../../../image/silk/newspaper_add.png');
+}
+
+#addEyeExamSchedule
+{
+    width: 650px;
+}
+
+#eyeExamList
+{
+    width: 700px;
+}
+
+#eyeExamList li
+{
+    padding: 5px;
+	width: 43em;
+}
+
+#eyeExamList .activeList_icons
+{
+    left: 5px;
+    position: absolute;
+    width: auto;
+}
+
+#eyeExamList li .checkbox
+{
+    margin-top: 3px;
+    margin-right: 5px;
+}
+
+.eyeExamDoctorName
+{
+    font-weight: bold;
+    float: left;
+}
+
+.eyeExamDate
+{
+    font-size: smaller;
+    float: right;
+}
+
+.eyeExamListContainer
+{
+    padding-left: 60px;
+}
+
+.eyeExamText
+{
+    display: block;
+}
+
+#eyeExamList textarea
+{
+    width: 30em;
+}
+
+#eyeExamList input.add, #addEyeExamSchedule input.save
+{
+    display: none;
+}
+
+.formContainer
+{
+    padding-left: 60px;
+    padding-top: 1em;
+}
+.order_printSchedule
+{
+    background-image: url('../../../../image/silk/printer.png');
+}

@@ -1,0 +1,103 @@
+#header 
+{
+	padding-top: 0px;
+}
+#searchContainer { border:none !important; background:none !important;}
+.searcher { float:left; margin-top:14px;}
+.quickSearch select, .quickSearch input.text, .quickSearch input.submit { padding:3px !important;}
+
+body 
+{
+	background: url("../../upload/theme/StoreLiveOp/header_bg.png") repeat scroll 0% 0% transparent;
+}
+
+.nexter { cursor:pointer; background:url("../../upload/theme/StoreLiveOp/right.jpg") no-repeat; width:79px; height:69px; position:absolute; display:block; right:-55px; top:50%; margin-top:-40px;}
+.prever { cursor:pointer;background:url("../../upload/theme/StoreLiveOp/left.jpg") no-repeat; width:79px; height:69px; position:absolute; display:block; left:-55px; top:50%; margin-top:-40px;}
+
+.resize 
+{
+	width: 932px;
+	margin: 0px auto;
+}
+
+.productList fieldset, #content 
+{
+	background: none repeat scroll 0px 0px rgba(255, 255, 255, 0.7);
+	padding: 5px;
+}
+
+.filterGroup.filterTypeCheckbox li div 
+{
+	background-image: none;
+}
+
+.dynamicMenu li 
+{
+	border-collapse: collapse;
+}
+
+#leftSide div.box .title div 
+{
+	text-align: left;
+	font-size: 20px;
+	padding: 5px 5px 5px 60px;
+	font-weight: normal;
+	color: #004b56;
+	font-family: 'Arial',sans-serif;
+}
+
+#content, #rightSide 
+{
+	padding-top: 5px;
+}
+
+.productContent, #specificationSection 
+{
+	/* overflow: auto; */
+	width: 900px;
+	padding: 5px;
+}
+
+table img 
+{
+	width: 200px;
+}
+
+#ratingSection 
+{
+	width: 600px;
+	float: left;
+}
+
+.overallRating
+{
+	text-align: left;
+}
+
+.onePageCheckout-index .step-incomplete h2 .step { background-color: #0a7484 !important; }
+
+.onePageCheckout-index h2 .step {
+border-width: 1px;
+padding: 5px;
+margin-right: 7px;
+background-color: black !important;
+color: white;
+}
+
+.cartImage img {
+border-width: 1px;
+width: auto;
+}
+.proceedToCheckout { font-size:20px; padding-top:10px; padding-bottom:10px; display:block; background:fff;}
+
+.errorText { color:#000;}
+
+.manufLogo 
+{
+    background-color: #FFFFFF;
+    float: left;
+    margin: 0 0 0 35px;
+    padding: 5px;
+    text-align: center;
+    width: 390px;
+}

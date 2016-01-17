@@ -1,0 +1,8 @@
+<?php $languageDefs = array (
+  'BucksNet' => 'Bucks.net',
+  'BucksNet_username' => 'User name',
+  'BucksNet_password' => 'Password',
+  'BucksNet_traderID' => 'Trader ID',
+  'BucksNet_vatID' => 'VAT ID',
+  'BucksNet_test' => 'Test mode',
+); ?>
