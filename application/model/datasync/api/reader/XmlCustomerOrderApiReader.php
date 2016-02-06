@@ -16,7 +16,7 @@ class XmlCustomerOrderApiReader extends ApiReader
 	const ALL_KEYS = -1;
 
 	protected $xmlKeyToApiActionMapping = array(
-		'list' => 'filter'
+		'list' => 'filter',
 	);
 	
 	private $apiActionName;

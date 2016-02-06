@@ -37,6 +37,43 @@ class CustomerOrderApi extends ModelApi
 		$this->addSupportedApiActionName('capture');
 		$this->addSupportedApiActionName('cancel');
 		$this->addSupportedApiActionName('import');
+		$this->addSupportedApiActionName('user_cart');
+		$this->addSupportedApiActionName('add_to_cart');
+	}
+
+	public function add_to_cart() {
+		$request = $this->application->getRequest();
+		$userID = $request->get('userID');
+		$productID = '50134'; //$request->get('ID');
+
+		$user = User::getInstanceByID($userID);
+		$order = CustomerOrder::getInstanceById('1622'); //CustomerOrder::getNewInstance($user);
+		$product = Product::getInstanceByID($productID);
+
+		//$customerOrders = ActiveRecordModel::getRecordSet('CustomerOrder', null, array('User'));
+		//$order = array_shift(array_values($customerOrders));
+
+		//throw new Exception(' Not Available = '. $product_id);
+		if(!$product->isAvailable()) {
+			throw new Exception($productID .' Not Available ' . $product->getID());
+		} else {
+			$order->setUser($user);
+			$order->loadAll();
+			$item = $order->addProduct($product, 1);
+			//$item->customerOrderID->set('1622');
+			$item->save();
+			throw new Exception('RES : ' . $item->getPrice() . " = " . $order->getID() . " userID = " .$user->getID());
+		}
+	}
+
+	public function user_cart() {
+		$request = $this->application->getRequest();
+		$userID = $request->get('userID');
+		if(intval($userID) > 0) {
+			return $this->apiActionGetOrdersBySelectFilter(select(eq(f('CustomerOrder.userID'), $userID)));
+		} else {
+			throw new Exception('User ID is required');
+		}
 	}
 
 	public function invoice()
@@ -130,7 +167,7 @@ class CustomerOrderApi extends ModelApi
 	
 		$userFieldNames = array('userGroupID','email', 'firstName','lastName','companyName','isEnabled');
 		$addressFieldNames = array('stateID','phone', 'firstName','lastName','companyName','phone', 'address1', 'address2', 'city', 'stateName', 'postalCode', 'countryID', 'countryName', 'fullName', 'compact');
-		$cartItemFieldNames = array('name', 'customerOrderID', 'shipmentID', 'price', 'count', 'reservedProductCount',  'dateAdded', 'isSavedForLater');
+		$cartItemFieldNames = array('name','ID','productID', 'customerOrderID', 'shipmentID', 'price', 'count', 'reservedProductCount',  'dateAdded', 'isSavedForLater');
 
 		// User
 		if(array_key_exists('User', $item))
@@ -187,7 +224,7 @@ class CustomerOrderApi extends ModelApi
 			$order->loadAll();
 			$transactions = $order->getTransactions();
 			$this->fillResponseItem($response->addChild('order'), $order->toArray());
-			
+
 			unset($order);
 			ActiveRecord::clearPool();
 		}

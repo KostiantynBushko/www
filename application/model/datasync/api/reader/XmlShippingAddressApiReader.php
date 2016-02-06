@@ -2,12 +2,13 @@
 /**
  * Created by PhpStorm.
  * User: Admin
- * Date: 1/23/16
- * Time: 18:28
+ * Date: 1/27/16
+ * Time: 21:33
  */
+
 ClassLoader::import('application.model.datasync.api.reader.ApiReader');
 
-class XmlNewsPostApiReader extends ApiReader {
+class XmlShippingAddressApiReader extends ApiReader{
 
     protected $xmlKeyToApiActionMapping = array
     (
@@ -16,13 +17,13 @@ class XmlNewsPostApiReader extends ApiReader {
 
     public static function getXMLPath()
     {
-        return '/request/newspost';
+        return '/request/shipping_address';
     }
 
     public function loadDataInRequest($request)
     {
         $apiActionName = $this->getApiActionName();
-        $shortFormatActions = array('get','delete'); // like <customer><delete>[customer id]</delete></customer>
+        $shortFormatActions = array('get'); // like <customer><delete>[customer id]</delete></customer>
         if(in_array($apiActionName, $shortFormatActions))
         {
             $request = parent::loadDataInRequest($request, '//', $shortFormatActions);
@@ -33,6 +34,6 @@ class XmlNewsPostApiReader extends ApiReader {
         }
         return $request;
     }
-
 }
+
 ?>

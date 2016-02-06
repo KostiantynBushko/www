@@ -2,27 +2,26 @@
 /**
  * Created by PhpStorm.
  * User: Admin
- * Date: 1/23/16
- * Time: 18:24
+ * Date: 1/27/16
+ * Time: 21:38
  */
 
 ClassLoader::import('application.model.datasync.ModelApi');
-ClassLoader::import('application.model.sitenews.NewsPost');
+ClassLoader::import('application.model.user.ShippingAddress');
 ClassLoader::import('application.helper.LiveCartSimpleXMLElement');
 
-class NewsPostApi extends ModelApi
-{
+class ShippingAddressApi extends ModelApi {
 
     public static function canParse(Request $request)
     {
-        return parent::canParse($request, array('XmlNewsPostApiReader'));
+        return parent::canParse($request, array('XmlShippingAddressApiReader'));
     }
 
     public function __construct(LiveCart $application)
     {
         parent::__construct(
             $application,
-            'NewsPost',
+            'ShippingAddress',
             array() // fields to ignore in NewsPost model
         );
     }
@@ -31,18 +30,17 @@ class NewsPostApi extends ModelApi
     {
         $parser = $this->getParser();
         $id = $this->getRequestID();
-        $categories = ActiveRecordModel::getRecordSetArray('NewsPost',
-            select(eq(f('NewsPost.ID'), $id))
+        $categories = ActiveRecordModel::getRecordSetArray('ShippingAddress',
+            select(eq(f('ShippingAddress.ID'), $id))
         );
         if(count($categories) == 0)
         {
-            throw new Exception('NewsPost not found');
+            throw new Exception('Shipping address not found');
         }
         $apiFieldNames = $parser->getApiFieldNames();
 
-        // --
         $response = new LiveCartSimpleXMLElement('<response datetime="'.date('c').'"></response>');
-        $responseCategory = $response->addChild('newspost');
+        $responseCategory = $response->addChild('shipping_address');
         while($category = array_shift($categories))
         {
             foreach($category as $k => $v)
@@ -63,22 +61,24 @@ class NewsPostApi extends ModelApi
         $apiFieldNames = $parser->getApiFieldNames();
         $parser->loadDataInRequest($request);
         $f = new ARSelectFilter();
-        $id = $request->get('ID');
+        $id = $request->get('userID');
         if(intval($id) > 0) // get action
         {
-            $f->mergeCondition(new EqualsCond(new ARFieldHandle('NewsPost', 'ID'), $id));
+            $f->mergeCondition(new EqualsCond(new ARFieldHandle('ShippingAddress', 'userID'), $id));
+        } else {
+            throw new Exception('User ID is required');
         }
         //$f->setOrder(MultiLingualObject::getLangOrderHandle(new ARFieldHandle('Category', 'name')));
 
-        $newspost = ActiveRecordModel::getRecordSetArray('NewsPost', $f);
+        $shipping_address = ActiveRecordModel::getRecordSetArray('ShippingAddress', $f);
         $response = new LiveCartSimpleXMLElement('<response datetime="'.date('c').'"></response>');
-        if($emptyListIsException && count($newspost) == 0)
+        if($emptyListIsException && count($shipping_address) == 0)
         {
-            throw new Exception('News post not found');
+            throw new Exception('ShippingAddress not found');
         }
-        while($category = array_shift($newspost))
+        while($category = array_shift($shipping_address))
         {
-            $xmlNewsPost = $response->addChild('newspost');
+            $xmlNewsPost = $response->addChild('shipping_address');
             foreach($category as $k => $v)
             {
                 if(in_array($k, $apiFieldNames))                 // those who are allowed fields ($this->apiFieldNames) ?
@@ -91,4 +91,3 @@ class NewsPostApi extends ModelApi
     }
 
 }
-?>

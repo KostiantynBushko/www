@@ -2,12 +2,13 @@
 /**
  * Created by PhpStorm.
  * User: Admin
- * Date: 1/23/16
- * Time: 18:28
+ * Date: 2/1/16
+ * Time: 20:19
  */
+
 ClassLoader::import('application.model.datasync.api.reader.ApiReader');
 
-class XmlNewsPostApiReader extends ApiReader {
+class XmlOrderedItemApiReader extends ApiReader{
 
     protected $xmlKeyToApiActionMapping = array
     (
@@ -16,13 +17,13 @@ class XmlNewsPostApiReader extends ApiReader {
 
     public static function getXMLPath()
     {
-        return '/request/newspost';
+        return '/request/ordered_item';
     }
 
     public function loadDataInRequest($request)
     {
         $apiActionName = $this->getApiActionName();
-        $shortFormatActions = array('get','delete'); // like <customer><delete>[customer id]</delete></customer>
+        $shortFormatActions = array('get','delete');
         if(in_array($apiActionName, $shortFormatActions))
         {
             $request = parent::loadDataInRequest($request, '//', $shortFormatActions);
@@ -34,5 +35,25 @@ class XmlNewsPostApiReader extends ApiReader {
         return $request;
     }
 
+    public function populate($updater, $profile)
+    {
+        parent::populate( $updater, $profile, $this->xml,
+            self::getXMLPath().'/[[API_ACTION_NAME]]/[[API_FIELD_NAME]]', array('ID'));
+    }
+
+    public function getARSelectFilter()
+    {
+        return parent::getARSelectFilter('OrderedItem');
+    }
+
+    public function sanitizeFilterField($fieldName, &$value)
+    {
+        if(in_array($fieldName, array('ID', 'customerOrderID')))
+        {
+            $value = '%:"%'.$value.'%"%'; // lets try to find value in serialized array.
+        }
+        return $value;
+    }
 }
+
 ?>

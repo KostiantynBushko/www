@@ -106,9 +106,13 @@ class CategoryApi extends ModelApi
 		$parser->loadDataInRequest($request);
 		$f = new ARSelectFilter();
 		$id = $request->get('ID');
+		$parentNodeID = $request->get('parentNodeID');
 		if(intval($id) > 0) // get action
 		{
 			$f->mergeCondition(new EqualsCond(new ARFieldHandle('Category', 'ID'), $id));
+		}
+		if(intval($parentNodeID) > 0) {
+			$f->mergeCondition(new EqualsCond(new ARFieldHandle('Category', 'parentNodeID'), $parentNodeID));	
 		}
 		$f->setOrder(MultiLingualObject::getLangOrderHandle(new ARFieldHandle('Category', 'name')));
 		$categories = ActiveRecordModel::getRecordSetArray('Category', $f);

@@ -30,10 +30,40 @@ class UserApi extends ModelApi
 			'User',
 			array('preferences') // fields to ignore in User model
 		);
-		$this->addSupportedApiActionName('import');
+		$this->addSupportedApiActionName('import','do_login');
 	}
 
-	// ------
+	public function do_login() {
+		$request = $this->application->getRequest();
+		$email = $request->get('email');
+		$password = $request->get('password');
+		$user = User::getInstanceByLogin($email, $password);
+
+		if (!$user)
+		{
+			throw new Exception('User error login for email: '. $email. ', password: '. $password);
+		}
+
+		$parser = $this->getParser();
+		$users_record = ActiveRecordModel::getRecordSetArray('User', select(eq(f('User.ID'), $user->getID())));
+
+		$apiFieldNames = $parser->getApiFieldNames();
+
+		$response = new LiveCartSimpleXMLElement('<response datetime="'.date('c'). " users".count($users_record) . '"></response>');
+		$responseCustomer = $response->addChild('customer');
+
+		$_user = array_shift($users_record);
+		unset($_user['password']);
+
+		foreach($_user as $k => $v)
+		{
+			if(in_array($k, $apiFieldNames))
+			{
+				$responseCustomer->addChild($k, $v);
+			}
+		}
+		return new SimpleXMLResponse($response);
+	}
 
 	public function import()
 	{
