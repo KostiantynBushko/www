@@ -58,11 +58,19 @@ class ProductApi extends ModelApi
 		$name = $request->get('name');
 		$request->set('name','%'.serialize($name).'%');
 		$response = new LiveCartSimpleXMLElement('<response datetime="'.date('c').'"></response>');
+
+		$selFilter = $parser->getARSelectFilter();
+		//$selFilter->Order(ARSelectFilter::ORDER_DESC);
+		/*if(intval($request->get('categoryID')) > 0) {
+			$selFilter->setOrder(new ARExpressionHandle(('Product.categoryID='.$request->get('categoryID'))), 'DESC');
+		}*/
+		$selFilter->setOrder(new ARExpressionHandle(('Product.ID')), 'DESC');
 		$products = Product::getRecordSetArray(
 			'Product',
-			$parser->getARSelectFilter(), 
+			$selFilter /*$parser->getARSelectFilter()*/,
 			array('Category', 'Manufacturer', 'ProductImage')
 		);
+
 		// $fieldNames = $parser->getApiFieldNames();
 		foreach($products as $product)
 		{

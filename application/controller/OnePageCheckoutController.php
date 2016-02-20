@@ -415,6 +415,7 @@ class OnePageCheckoutController extends CheckoutController
 
 	public function doSelectShippingAddress()
 	{
+
 		$sameAddress = $this->config->get('REQUIRE_SAME_ADDRESS');
 		$this->config->setRuntime('REQUIRE_SAME_ADDRESS', false);
 

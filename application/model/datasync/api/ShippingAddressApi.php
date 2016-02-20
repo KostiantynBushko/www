@@ -61,12 +61,13 @@ class ShippingAddressApi extends ModelApi {
         $apiFieldNames = $parser->getApiFieldNames();
         $parser->loadDataInRequest($request);
         $f = new ARSelectFilter();
-        $id = $request->get('userID');
+        $id = $request->get('ID');
+
         if(intval($id) > 0) // get action
         {
-            $f->mergeCondition(new EqualsCond(new ARFieldHandle('ShippingAddress', 'userID'), $id));
+            $f->mergeCondition(new EqualsCond(new ARFieldHandle('ShippingAddress', 'ID'), $id));
         } else {
-            throw new Exception('User ID is required');
+            throw new Exception('Shipping Address ID is required');
         }
         //$f->setOrder(MultiLingualObject::getLangOrderHandle(new ARFieldHandle('Category', 'name')));
 

@@ -2,29 +2,30 @@
 /**
  * Created by PhpStorm.
  * User: Admin
- * Date: 2/6/16
- * Time: 03:27
+ * Date: 2/9/16
+ * Time: 15:13
  */
 
 ClassLoader::import('application.model.datasync.ModelApi');
-ClassLoader::import('application.model.delivery.State');
+ClassLoader::import('application.model.product.ProductVariation');
+ClassLoader::import('application.model.category.Category');
 ClassLoader::import('application.helper.LiveCartSimpleXMLElement');
 
-class StateApi extends ModelApi {
-    protected $application;
+class ProductVariationApi extends ModelApi{
 
     public static function canParse(Request $request)
     {
-        return parent::canParse($request, array('XmlStateApiReader'));
+        return parent::canParse($request, array('XmlProductVariationApiReader'));
     }
 
     public function __construct(LiveCart $application)
     {
         parent::__construct(
             $application,
-            'State',
-            array() // fields to ignore in  model
+            'ProductVariation',
+            array() // fields to ignore in Product model
         );
+        $this->addSupportedApiActionName('import');
     }
 
     public function filter($emptyListIsException = false)
@@ -34,30 +35,30 @@ class StateApi extends ModelApi {
         $apiFieldNames = $parser->getApiFieldNames();
         $parser->loadDataInRequest($request);
         $f = new ARSelectFilter();
-        $countryID = $request->get('countryID');
+        $id = $request->get('ID');
 
-        if(!empty($countryID)) // get action
+        if(!empty($id)) // get action
         {
-            $f->mergeCondition(new EqualsCond(new ARFieldHandle('State', 'countryID'), $countryID));
+            $f->mergeCondition(new EqualsCond(new ARFieldHandle('ProductVariation', 'ID'), $id));
         } else {
-            throw new Exception('countryID is required');
+            throw new Exception('Product variation ID is required');
         }
 
-        $states = ActiveRecordModel::getRecordSetArray('State', $f);
+        $product_variations = ActiveRecordModel::getRecordSetArray('ProductVariation', $f);
         $response = new LiveCartSimpleXMLElement('<response datetime="'.date('c').'"></response>');
 
-        if($emptyListIsException && count($states) == 0)
+        if($emptyListIsException && count($product_variations) == 0)
         {
-            throw new Exception('UserAddress not found');
+            throw new Exception('Product variation not found');
         }
-        while($state = array_shift($states))
+        while($variation = array_shift($product_variations))
         {
-            $xmlState = $response->addChild('state');
-            foreach($state as $k => $v)
+            $xml = $response->addChild('product_variation');
+            foreach($variation as $k => $v)
             {
                 if(in_array($k, $apiFieldNames))                 // those who are allowed fields ($this->apiFieldNames) ?
                 {
-                    $xmlState->addChild($k, $v);
+                    $xml->addChild($k, $v);
                 }
             }
         }

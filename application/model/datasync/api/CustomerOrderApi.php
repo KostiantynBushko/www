@@ -32,7 +32,7 @@ class CustomerOrderApi extends ModelApi
 			'CustomerOrder',
 			array() // fields to ignore in CustomerOrder model
 		);
-
+		$this->addSupportedApiActionName('test');
 		$this->addSupportedApiActionName('invoice');
 		$this->addSupportedApiActionName('capture');
 		$this->addSupportedApiActionName('cancel');
@@ -41,30 +41,21 @@ class CustomerOrderApi extends ModelApi
 		$this->addSupportedApiActionName('add_to_cart');
 	}
 
-	public function add_to_cart() {
-		$request = $this->application->getRequest();
-		$userID = $request->get('userID');
-		$productID = '50134'; //$request->get('ID');
+	public function test () {
 
-		$user = User::getInstanceByID($userID);
-		$order = CustomerOrder::getInstanceById('1622'); //CustomerOrder::getNewInstance($user);
-		$product = Product::getInstanceByID($productID);
+		//throw new Exception('test ID ' . $this->getApplication()->getRequest()->get('ID') . ' ' . json_encode($this->application->getExpressPaymentHandlerList()) );
+		$order = CustomerOrder::getInstanceById($this->getApplication()->getRequest()->get('ID'));
+		$order->loadAll();
+		$order->calculateTotal(true);
 
-		//$customerOrders = ActiveRecordModel::getRecordSet('CustomerOrder', null, array('User'));
-		//$order = array_shift(array_values($customerOrders));
-
-		//throw new Exception(' Not Available = '. $product_id);
-		if(!$product->isAvailable()) {
-			throw new Exception($productID .' Not Available ' . $product->getID());
-		} else {
-			$order->setUser($user);
-			$order->loadAll();
-			$item = $order->addProduct($product, 1);
-			//$item->customerOrderID->set('1622');
-			$item->save();
-			throw new Exception('RES : ' . $item->getPrice() . " = " . $order->getID() . " userID = " .$user->getID());
-		}
+		throw new Exception(" Total = " . $order->getTotal(true) . " ID = " . $order->getID());
+		//throw new Exception('test ID ' . $this->getApplication()->getRequest()->get('ID'));
+		return $this->apiActionGetOrdersBySelectFilter(
+			select(eq(
+				f('CustomerOrder.ID'),
+				$this->getApplication()->getRequest()->get('ID'))));
 	}
+
 
 	public function user_cart() {
 		$request = $this->application->getRequest();
@@ -94,6 +85,16 @@ class CustomerOrderApi extends ModelApi
 
 	public function filter()
 	{
+		$request = $this->application->getRequest();
+		$ID = $request->get('ID');
+		if(intval($ID) > 0 && isset($ID)) {
+			$order = CustomerOrder::getInstanceById($ID);
+			$order->loadAll();
+			$order->getTotal(true);
+			$order->totalAmount->set($order->getTotal(true));
+			$order->getTaxAmount();
+			$order->save(true);
+		}
 		return $this->apiActionGetOrdersBySelectFilter($this->getParser()->getARSelectFilter(), true);
 	}
 	
@@ -137,26 +138,110 @@ class CustomerOrderApi extends ModelApi
 
 	public function create()
 	{
-		$updater = $this->getImportHandler();
+		$request = $this->application->getRequest();
+		$user = User::getInstanceByID($request->get('userID'));
+		$user->load(true);
+		$user->loadAddresses();
+		$new_order = CustomerOrder::getNewInstance($user);
+		$new_order->setUser($user);
+		$new_order->loadAll();
+		$new_order->getShipments();
+		$new_order->getTotal(true);
+		$new_order->save(true);
+
+		$address = $user->defaultShippingAddress->get();
+		if (!$address)
+		{
+			$address = $user->defaultBillingAddress->get();
+		}
+
+		if (!$new_order->shippingAddress->get() && $address /*&& $this->isShippingRequired($this->order)*/)
+		{
+			$userAddress = $address->userAddress->get();
+			$new_order->shippingAddress->set($userAddress);
+			$new_order->save(true);
+		}
+
+		$address = $user->defaultBillingAddress->get();
+		if (!$new_order->billingAddress->get() && $address)
+		{
+			$userAddress = $address->userAddress->get();
+			$new_order->billingAddress->set($userAddress);
+			$new_order->save(true);
+		}
+		$new_order->loadAll();
+
+		return $this->apiActionGetOrdersBySelectFilter(select(eq( f('CustomerOrder.ID'),  $new_order->getFieldValue('ID'))));
+
+
+		/*$updater = $this->getImportHandler();
 		$updater->allowOnlyCreate();
 		$profile = new CsvImportProfile('CustomerOrder');
 		$reader = $this->getDataImportIterator($updater, $profile);
 		$updater->setCallback(array($this, 'importCallback'));
 		$updater->importFile($reader, $profile);
-		
-		return $this->statusResponse($this->importedIDs, 'created');
+		return $this->statusResponse($this->importedIDs, 'created');*/
 	}
 
 	public function update()
 	{
-		$updater = new ApiCustomerOrderImport($this->application);
+		$userID = $this->getApplication()->getRequest()->get('userID');
+		$orderID = $this->getApplication()->getRequest()->get('ID');
+
+		if(intval($userID) == 0 || intval($orderID) == 0) {
+			throw new Exception("User and Order ID not set");
+		}
+		$user = User::getInstanceByID($userID);
+		$order = CustomerOrder::getInstanceById($orderID);
+
+		$user->load();
+		$user->loadAddresses();
+		$order->loadAll();
+
+		/*$address = $user->defaultShippingAddress->get();
+		if (!$address)
+		{
+			$address = $user->defaultBillingAddress->get();
+		}
+
+		if (!$order->shippingAddress->get() && $address)
+		{
+			$userAddress = $address->userAddress->get();
+			$order->shippingAddress->set($userAddress);
+			$order->save(true);
+		}
+
+		$address = $user->defaultBillingAddress->get();
+		if (!$order->billingAddress->get() && $address)
+		{
+			$userAddress = $address->userAddress->get();
+			$order->billingAddress->set($userAddress);
+			$order->save(true);
+		}
+		throw new Exception(json_encode($order));*/
+		throw new Exception($order->getFieldValue('ID'));
+		// ---------------------------------------------
+		/*$id = $this->getApplication()->getRequest()->get('ID');
+		if(intval($id) == 0) {
+			throw new Exception("Order ID is required");
+		}
+		$order = CustomerOrder::getInstanceById($id);
+		$order->load(true);
+
+		if($billing_address = $this->getApplication()->getRequest()->get('billingAddressID')) {
+			$order->billingAddressID->set($billing_address);
+		}
+		$order->save();*/
+
+		//----------------------------------------------
+		/*$updater = new ApiCustomerOrderImport($this->application);
 		$updater->allowOnlyUpdate();
 		$profile = new CsvImportProfile('CustomerOrder');
 		$reader = $this->getDataImportIterator($updater, $profile);
 		$updater->setCallback(array($this, 'importCallback'));
-		$updater->importFile($reader, $profile);
+		$updater->importFile($reader, $profile);*/
 		
-		return $this->statusResponse($this->importedIDs, 'updated');
+		return $this->apiActionGetOrdersBySelectFilter(select(eq( f('CustomerOrder.ID'), $this->getApplication()->getRequest()->get('ID'))));
 	}
 	
 	// --

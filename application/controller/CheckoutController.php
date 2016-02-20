@@ -154,8 +154,8 @@ class CheckoutController extends FrontendController
 		$handler->setOrder($this->order);
 
 		$details = $handler->getTransactionDetails($this->request->toArray());
-
 		$address = UserAddress::getNewInstanceByTransaction($details);
+
 		$address->save();
 
 		$paymentData = array_diff_key($this->request->toArray(), array_flip(array('controller', 'action', 'id', 'route', 'PHPSESSID')));

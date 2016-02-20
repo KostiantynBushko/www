@@ -37,7 +37,13 @@ class OrderedItemApi extends ModelApi{
         $customerOrderID = $request->get('customerOrderID');
         $count = $request->get('count');
 
+        if(!isset($customerOrderID) && intval($customerOrderID == 0)) {
+            throw new Exception('Order ID is required');
+        }
+
         $order = CustomerOrder::getInstanceById($customerOrderID);
+        $order->load(true);
+        $order->loadAll();
         $product = Product::getInstanceByID($productID);
 
         if(!$product->isAvailable()) {
@@ -49,11 +55,25 @@ class OrderedItemApi extends ModelApi{
                 $count = $product->getMinimumQuantity();
             }
             ActiveRecordModel::beginTransaction();
+
             $item = $order->addProduct($product,$count);
-            $item->save();
-            //$order->mergeItems();
+            if ($item instanceof OrderedItem)
+            {
+
+                if ($order->isMultiAddress->get())
+                {
+                    $item->save();
+                }
+            }
+            $order->mergeItems();
+            $order->getTotal(true);
+            $order->totalAmount->set($order->getTotal(true));
+            $order->getTaxAmount();
+            $order->save(true);
+
             ActiveRecordModel::commit();
         }
+
         $response = new LiveCartSimpleXMLElement('<response datetime="'.date('c').'"></response>');
         return new SimpleXMLResponse($response);
     }

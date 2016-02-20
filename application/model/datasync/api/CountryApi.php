@@ -37,7 +37,7 @@ class CountryApi extends ModelApi {
         foreach($countries as $k => $v) {
             $xmlState = $response->addChild('country');
             $xmlState->addChild("countryID", htmlentities($k));
-            $xmlState->addChild("country_name", htmlentities($v));
+            $xmlState->addChild("country_name", $v);
         }
         return new SimpleXMLResponse($response);
     }

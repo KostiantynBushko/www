@@ -36,6 +36,11 @@ class UserAddress extends ActiveRecordModel implements EavAble
 		$schema->registerAutoReference('stateID');
 	}
 
+	public static function getInstanceById($id, $loadData = self::LOAD_DATA, $loadReferencedRecords = false)
+	{
+		return parent::getInstanceById('UserAddress', $id, $loadData, $loadReferencedRecords);
+	}
+
 	public static function getNewInstance()
 	{
 		return parent::getNewInstance(__CLASS__);
