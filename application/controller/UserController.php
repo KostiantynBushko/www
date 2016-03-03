@@ -457,7 +457,6 @@ class UserController extends FrontendController
 		$response = new ActionResponse('regForm', $form);
 
 		SessionUser::getAnonymousUser()->getSpecification()->setFormResponse($response, $form);
-
 		return $response;
 	}
 

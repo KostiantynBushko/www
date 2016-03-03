@@ -39,21 +39,11 @@ class CustomerOrderApi extends ModelApi
 		$this->addSupportedApiActionName('import');
 		$this->addSupportedApiActionName('user_cart');
 		$this->addSupportedApiActionName('add_to_cart');
+		$this->addSupportedApiActionName('select_shipment');
 	}
 
 	public function test () {
-
-		//throw new Exception('test ID ' . $this->getApplication()->getRequest()->get('ID') . ' ' . json_encode($this->application->getExpressPaymentHandlerList()) );
-		$order = CustomerOrder::getInstanceById($this->getApplication()->getRequest()->get('ID'));
-		$order->loadAll();
-		$order->calculateTotal(true);
-
-		throw new Exception(" Total = " . $order->getTotal(true) . " ID = " . $order->getID());
-		//throw new Exception('test ID ' . $this->getApplication()->getRequest()->get('ID'));
-		return $this->apiActionGetOrdersBySelectFilter(
-			select(eq(
-				f('CustomerOrder.ID'),
-				$this->getApplication()->getRequest()->get('ID'))));
+		throw new Exception('CONFIG : ' . $this->application->config->get('NOTIFICATION_EMAIL'));
 	}
 
 
@@ -93,6 +83,21 @@ class CustomerOrderApi extends ModelApi
 			$order->getTotal(true);
 			$order->totalAmount->set($order->getTotal(true));
 			$order->getTaxAmount();
+
+			foreach ($order->getShipments() as $shipment) {
+				if (!$shipment->getSelectedRate())
+				{
+					$shipment->shippingAmount->set(0);
+				}
+			}
+			foreach ($order->getShipments() as $shipment)
+			{
+				$shipment->setAvailableRates(null);
+				$shipment->shippingAddress->set($order->shippingAddress->get());
+			}
+
+			$order->serializeShipments();
+
 			$order->save(true);
 		}
 		return $this->apiActionGetOrdersBySelectFilter($this->getParser()->getARSelectFilter(), true);
@@ -136,6 +141,7 @@ class CustomerOrderApi extends ModelApi
 		return $this->statusResponse($this->importedIDs, 'imported');
 	}
 
+
 	public function create()
 	{
 		$request = $this->application->getRequest();
@@ -172,15 +178,6 @@ class CustomerOrderApi extends ModelApi
 		$new_order->loadAll();
 
 		return $this->apiActionGetOrdersBySelectFilter(select(eq( f('CustomerOrder.ID'),  $new_order->getFieldValue('ID'))));
-
-
-		/*$updater = $this->getImportHandler();
-		$updater->allowOnlyCreate();
-		$profile = new CsvImportProfile('CustomerOrder');
-		$reader = $this->getDataImportIterator($updater, $profile);
-		$updater->setCallback(array($this, 'importCallback'));
-		$updater->importFile($reader, $profile);
-		return $this->statusResponse($this->importedIDs, 'created');*/
 	}
 
 	public function update()
@@ -197,49 +194,6 @@ class CustomerOrderApi extends ModelApi
 		$user->load();
 		$user->loadAddresses();
 		$order->loadAll();
-
-		/*$address = $user->defaultShippingAddress->get();
-		if (!$address)
-		{
-			$address = $user->defaultBillingAddress->get();
-		}
-
-		if (!$order->shippingAddress->get() && $address)
-		{
-			$userAddress = $address->userAddress->get();
-			$order->shippingAddress->set($userAddress);
-			$order->save(true);
-		}
-
-		$address = $user->defaultBillingAddress->get();
-		if (!$order->billingAddress->get() && $address)
-		{
-			$userAddress = $address->userAddress->get();
-			$order->billingAddress->set($userAddress);
-			$order->save(true);
-		}
-		throw new Exception(json_encode($order));*/
-		throw new Exception($order->getFieldValue('ID'));
-		// ---------------------------------------------
-		/*$id = $this->getApplication()->getRequest()->get('ID');
-		if(intval($id) == 0) {
-			throw new Exception("Order ID is required");
-		}
-		$order = CustomerOrder::getInstanceById($id);
-		$order->load(true);
-
-		if($billing_address = $this->getApplication()->getRequest()->get('billingAddressID')) {
-			$order->billingAddressID->set($billing_address);
-		}
-		$order->save();*/
-
-		//----------------------------------------------
-		/*$updater = new ApiCustomerOrderImport($this->application);
-		$updater->allowOnlyUpdate();
-		$profile = new CsvImportProfile('CustomerOrder');
-		$reader = $this->getDataImportIterator($updater, $profile);
-		$updater->setCallback(array($this, 'importCallback'));
-		$updater->importFile($reader, $profile);*/
 		
 		return $this->apiActionGetOrdersBySelectFilter(select(eq( f('CustomerOrder.ID'), $this->getApplication()->getRequest()->get('ID'))));
 	}
@@ -297,7 +251,7 @@ class CustomerOrderApi extends ModelApi
 	private function apiActionGetOrdersBySelectFilter($ARSelectFilter, $allowEmptyResponse=false)
 	{
 		set_time_limit(0);
-
+		$ARSelectFilter->setOrder(new ARExpressionHandle(('CustomerOrder.ID')), 'DESC');
 		$customerOrders = ActiveRecordModel::getRecordSet('CustomerOrder', $ARSelectFilter, array('User'));
 		if($allowEmptyResponse == false && count($customerOrders) == 0)
 		{

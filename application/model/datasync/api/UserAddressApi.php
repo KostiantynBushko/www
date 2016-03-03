@@ -132,7 +132,7 @@ class UserAddressApi extends ModelApi{
             {
                 if(in_array($k, $apiFieldNames))                 // those who are allowed fields ($this->apiFieldNames) ?
                 {
-                    $user_address_response->addChild($k, htmlentities($v));
+                    $user_address_response->addChild($k, $v);
                 }
             }
         }

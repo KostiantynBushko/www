@@ -125,6 +125,7 @@ class TransactionApi extends ModelApi{
             throw new Exception('Order ID is required');
         }
 
+        $f->setOrder(new ARExpressionHandle(('CustomerOrder.ID')), 'DESC');
         $transactions = ActiveRecordModel::getRecordSetArray('Transaction', $f);
         $response = new LiveCartSimpleXMLElement('<response datetime="'.date('c').'"></response>');
         if($emptyListIsException && count($transactions) == 0)
@@ -149,12 +150,16 @@ class TransactionApi extends ModelApi{
     protected function finalizeOrder(CustomerOrder $customer_order, User $user)
     {
         $user->load();
+        /*if (!count($customer_order->getShipments()))
+        {
+            throw new Exception('No shipments in order');
+        }*/
         $newOrder = $customer_order->finalize();
 
         $orderArray = $customer_order->toArray(array('payments' => true));
 
         // send order confirmation email
-        /*if ($this->config->get('EMAIL_NEW_ORDER'))
+        if ($this->application->config->get('EMAIL_NEW_ORDER'))
         {
             $email = new Email($this->application);
             $email->setUser($user);
@@ -164,15 +169,15 @@ class TransactionApi extends ModelApi{
         }
 
         // notify store admin
-        if ($this->config->get('NOTIFY_NEW_ORDER'))
+        if ($this->application->config->get('NOTIFY_NEW_ORDER'))
         {
             $email = new Email($this->application);
-            $email->setTo($this->config->get('NOTIFICATION_EMAIL'), $this->config->get('STORE_NAME'));
+            $email->setTo($this->application->config->get('NOTIFICATION_EMAIL'), $this->application->config->get('STORE_NAME'));
             $email->setTemplate('notify.order');
             $email->set('order', $orderArray);
             $email->set('user', $user->toArray());
             $email->send();
-        }*/
+        }
 
         // if user hasn't wish list items order->finalize() will return null, saving null with SessionOrder causes fatal error!
         if($newOrder instanceof CustomerOrder) {
