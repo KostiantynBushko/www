@@ -2,6 +2,7 @@
 
 ClassLoader::import('application.model.datasync.ModelApi');
 ClassLoader::import('application.model.product.Product');
+ClassLoader::import('application.model.filter.SearchFilter');
 ClassLoader::import('application.model.category.Category');
 ClassLoader::import('application.helper.LiveCartSimpleXMLElement');
 
@@ -18,7 +19,6 @@ class ProductApi extends ModelApi
 	{
 		return parent::canParse($request, array('XmlProductApiReader'));
 	}
-
 	public function __construct(LiveCart $application)
 	{
 		parent::__construct(
@@ -27,9 +27,11 @@ class ProductApi extends ModelApi
 			array('childSettings') // fields to ignore in Product model
 		);
 		$this->addSupportedApiActionName('import');
+		$this->addSupportedApiActionName('search');
 	}
 
-	// ------ 
+	// ------
+
 
 	public function get()
 	{

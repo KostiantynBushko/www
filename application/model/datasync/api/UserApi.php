@@ -39,10 +39,34 @@ class UserApi extends ModelApi
 		$password = $request->get('password');
 		$user = User::getInstanceByLogin($email, $password);
 
-		if (!$user)
-		{
+		if (!$user) {
 			throw new Exception('User error login for email: '. $email. ', password: '. $password);
 		}
+
+		$user->loadAddresses();
+		$shipping = $user->defaultShippingAddressID->get();
+		$billing = $user->defaultBillingAddressID->get();
+
+		if(!isset($shipping)) {
+			$user_shipping_address = UserAddress::getNewInstance();
+			$user_shipping_address->firstName->set($user->firstName->get());
+			$user_shipping_address->lastName->set($user->lastName->get());
+			$user_shipping_address->companyName->set($user->companyName->get());
+			$user_shipping_address->save();
+			$shipping_address = ShippingAddress::getNewInstance($user, $user_shipping_address);
+			$shipping_address->save();
+		}
+
+		if(!isset($billing)) {
+			$user_billing_address = UserAddress::getNewInstance();
+			$user_billing_address->firstName->set($user->firstName->get());
+			$user_billing_address->lastName->set($user->lastName->get());
+			$user_billing_address->companyName->set($user->companyName->get());
+			$user_billing_address->save();
+			$billing_address = BillingAddress::getNewInstance($user, $user_billing_address);
+			$billing_address->save();
+		}
+
 
 		$parser = $this->getParser();
 		$users_record = ActiveRecordModel::getRecordSetArray('User', select(eq(f('User.ID'), $user->getID())));

@@ -84,6 +84,52 @@ class CustomerOrderApi extends ModelApi
 			$order->totalAmount->set($order->getTotal(true));
 			$order->getTaxAmount();
 
+			$user = $order->user->get();
+			$user->load();
+			$user->loadAddresses();
+
+			$shipping = $user->defaultShippingAddressID->get();
+			$billing = $user->defaultBillingAddressID->get();
+
+			if(!isset($shipping)) {
+				$user_shipping_address = UserAddress::getNewInstance();
+				$user_shipping_address->firstName->set($user->firstName->get());
+				$user_shipping_address->lastName->set($user->lastName->get());
+				$user_shipping_address->companyName->set($user->companyName->get());
+				$user_shipping_address->save();
+				$shipping_address = ShippingAddress::getNewInstance($user, $user_shipping_address);
+				$shipping_address->save();
+			}
+
+			if(!isset($billing)) {
+				$user_billing_address = UserAddress::getNewInstance();
+				$user_billing_address->firstName->set($user->firstName->get());
+				$user_billing_address->lastName->set($user->lastName->get());
+				$user_billing_address->companyName->set($user->companyName->get());
+				$user_billing_address->save();
+				$billing_address = BillingAddress::getNewInstance($user, $user_billing_address);
+				$billing_address->save();
+			}
+
+			$shippingAddressID = $order->shippingAddressID->get();
+			$billingAddressID = $order->billingAddressID->get();
+
+			if(!isset($shippingAddressID)) {
+				$_shipping = $user->defaultShippingAddressID->get();
+				$_shipping->load();
+				$ua1 = $_shipping->userAddress->get();
+				$ua1->load();
+				$order->shippingAddressID->set($ua1);
+			}
+
+			if(!isset($billingAddressID)) {
+				$_billing = $user->defaultBillingAddressID->get();
+				$_billing->load();
+				$ua2 = $_billing->userAddress->get();
+				$ua2->load();
+				$order->billingAddressID->set($ua2);
+			}
+
 			foreach ($order->getShipments() as $shipment) {
 				if (!$shipment->getSelectedRate())
 				{
