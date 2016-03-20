@@ -68,7 +68,7 @@ class NewsPostApi extends ModelApi
         {
             $f->mergeCondition(new EqualsCond(new ARFieldHandle('NewsPost', 'ID'), $id));
         }
-        //$f->setOrder(MultiLingualObject::getLangOrderHandle(new ARFieldHandle('Category', 'name')));
+        $f->setOrder(new ARExpressionHandle(('NewsPost.ID')), 'DESC');
 
         $newspost = ActiveRecordModel::getRecordSetArray('NewsPost', $f);
         $response = new LiveCartSimpleXMLElement('<response datetime="'.date('c').'"></response>');

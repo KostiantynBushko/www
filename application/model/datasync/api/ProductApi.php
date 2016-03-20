@@ -28,6 +28,8 @@ class ProductApi extends ModelApi
 		);
 		$this->addSupportedApiActionName('import');
 		$this->addSupportedApiActionName('search');
+		$this->addSupportedApiActionName('az');
+		$this->addSupportedApiActionName('za');
 	}
 
 	// ------
@@ -55,7 +57,7 @@ class ProductApi extends ModelApi
 
 	public function filter()
 	{
-		$parser = $this->getParser();		
+		$parser = $this->getParser();
 		$request = $this->getApplication()->getRequest();
 		$name = $request->get('name');
 		$request->set('name','%'.serialize($name).'%');
@@ -64,15 +66,52 @@ class ProductApi extends ModelApi
 		$selFilter = $parser->getARSelectFilter();
 
 		$selFilter->setOrder(new ARExpressionHandle(('Product.ID')), 'DESC');
+
 		$products = Product::getRecordSetArray(
 			'Product',
-			$selFilter /*$parser->getARSelectFilter()*/,
+			$selFilter,
 			array('Category', 'Manufacturer', 'ProductImage')
 		);
 
-		// $fieldNames = $parser->getApiFieldNames();
-		foreach($products as $product)
-		{
+		foreach($products as $product) {
+			$this->fillResponseItem($response->addChild('product'), $product);
+		}
+		return new SimpleXMLResponse($response);
+	}
+
+	public function za() {
+		$parser = $this->getParser();
+		$request = $this->getApplication()->getRequest();
+		$name = $request->get('name');
+		$request->set('name','%'.serialize($name).'%');
+		$response = new LiveCartSimpleXMLElement('<response datetime="'.date('c').'"></response>');
+
+		$selFilter = $parser->getARSelectFilter();
+		$selFilter->mergeCondition(new EqualsCond(new ARFieldHandle('Product', 'categoryID'), $request->get('categoryID')));
+
+		$selFilter->setOrder(new ARExpressionHandle(('Product.sku')), 'DESC');
+		$products = ActiveRecordModel::getRecordSetArray('Product', $selFilter, array('Category', 'Manufacturer', 'ProductImage'));
+
+		foreach($products as $product) {
+			$this->fillResponseItem($response->addChild('product'), $product);
+		}
+		return new SimpleXMLResponse($response);
+	}
+
+	public function az() {
+		$parser = $this->getParser();
+		$request = $this->getApplication()->getRequest();
+		$name = $request->get('name');
+		$request->set('name','%'.serialize($name).'%');
+		$response = new LiveCartSimpleXMLElement('<response datetime="'.date('c').'"></response>');
+
+		$selFilter = $parser->getARSelectFilter();
+		$selFilter->mergeCondition(new EqualsCond(new ARFieldHandle('Product', 'categoryID'), $request->get('categoryID')));
+
+		$selFilter->setOrder(new ARExpressionHandle(('Product.sku')), 'ASC');
+		$products = ActiveRecordModel::getRecordSetArray('Product', $selFilter, array('Category', 'Manufacturer', 'ProductImage'));
+
+		foreach($products as $product) {
 			$this->fillResponseItem($response->addChild('product'), $product);
 		}
 		return new SimpleXMLResponse($response);

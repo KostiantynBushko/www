@@ -162,6 +162,14 @@ abstract class ApiReader implements Iterator
 			{
 				$xmlString = str_replace($m[1], ' '. $atributeName.'="'.$m[2].'" ', $xmlString);
 			}
+			if(preg_match('/\<za.+('.$atributeName.'=[\s\\\\\'\\\\"]*(\d+)[\s\\\\\'\\\\"]*)/', $xmlString, $m))
+			{
+				$xmlString = str_replace($m[1], ' '. $atributeName.'="'.$m[2].'" ', $xmlString);
+			}
+			if(preg_match('/\<az.+('.$atributeName.'=[\s\\\\\'\\\\"]*(\d+)[\s\\\\\'\\\\"]*)/', $xmlString, $m))
+			{
+				$xmlString = str_replace($m[1], ' '. $atributeName.'="'.$m[2].'" ', $xmlString);
+			}
 		}
 		//--
 

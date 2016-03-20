@@ -50,15 +50,6 @@ class UserApnTokenApi extends ModelApi {
             } else {
                 $user_apn_token = UserApnToken::getNewInstance($userID, $token);
                 $user_apn_token->save();
-                /*if (strcmp($token, $user_apn_token->token->get()) == 0) {
-                    throw new Exception("Token exist");
-                    $user_apn_token->token->set($token);
-                    $user_apn_token->save();
-                } else {
-                    throw new Exception("Token not exist");
-                    $user_apn_token = UserApnToken::getNewInstance($userID, $token);
-                    $user_apn_token->save();
-                }*/
             }
         } else {
             $token = UserApnToken::getNewInstance(null, $token);
@@ -79,9 +70,9 @@ class UserApnTokenApi extends ModelApi {
 
         if(!empty($userID)) {
             $f->mergeCondition(new EqualsCond(new ARFieldHandle('UserApnToken', 'userID'), $userID));
-        } else {
+        } /*else {
             throw new Exception('userID is required');
-        }
+        }*/
 
         $user_tokens = ActiveRecordModel::getRecordSetArray('UserApnToken', $f);
         $response = new LiveCartSimpleXMLElement('<response datetime="'.date('c').'"></response>');

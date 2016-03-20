@@ -30,8 +30,67 @@ class UserApi extends ModelApi
 			'User',
 			array('preferences') // fields to ignore in User model
 		);
-		$this->addSupportedApiActionName('import','do_login');
+		$this->addSupportedApiActionName('import','do_login', 'do_register', 'email_exist');
 	}
+
+	public function email_exist() {
+		$request = $this->application->getRequest();
+		$email = $request->get('email');
+		//throw new Exception('Email not exist ' . $email);
+
+		$user = User::getInstanceByEmail($email);
+		$response = new LiveCartSimpleXMLElement('<response datetime="'.date('c') . '"></response>');
+
+		if(isset($user)) {
+			$response->addChild('state','1');
+		} else {
+			$response->addChild('state','0');
+		}
+		return new SimpleXMLResponse($response);
+	}
+	
+	public function do_register()  {
+		$request = $this->application->getRequest();
+		$first_name = $request->get('firstName');
+		$last_name = $request->get('lastName');
+		$company = $request->get('companyName');
+		$email = $request->get('email');
+		$pass = $request->get('password');
+
+		if(!isset($first_name) || !isset($last_name) || !isset($email) || !isset($pass)) {
+			throw new Exception("Please complete required field " .$last_name);
+		}
+
+		$user = User::getInstanceByEmail($email);
+		if(isset($user)) {
+			throw new Exception('User already exist');
+		}
+		$user = User::getNewInstance($email, $pass);
+		$user->firstName->set($first_name);
+		$user->lastName->set($last_name);
+		if(isset($company)) {
+			$user->companyName->set($company);
+		}
+		$user->email->set($email);
+		$user->isEnabled->set('1');
+		$user->save();
+
+		$code = rand(1, 10000000) . rand(1, 10000000);
+		$user->setPreference('confirmation', $code);
+		$user->save();
+
+		$_email = new Email($this->application);
+		$_email->setUser($user);
+		$_email->set('code', $code);
+		$_email->setTemplate('user.confirm');
+		$_email->send();
+
+		$response = new LiveCartSimpleXMLElement('<response datetime="'.date('c') . '"></response>');
+		$response->addChild('state','1');
+		return new SimpleXMLResponse($response);
+	}
+
+
 
 	public function do_login() {
 		$request = $this->application->getRequest();
