@@ -6,7 +6,7 @@ ClassLoader::import('application.model.datasync.import.CustomerOrderImport');
 ClassLoader::import('application/model.datasync.CsvImportProfile');
 ClassLoader::import('application/model.order.CustomerOrder');
 ClassLoader::import('application.helper.LiveCartSimpleXMLElement');
-
+ClassLoader::importNow("application.helper.AppleAPNService");
 /**
  * Web service access layer for CustomerOrder model
  *
@@ -42,7 +42,21 @@ class CustomerOrderApi extends ModelApi
 		$this->addSupportedApiActionName('select_shipment');
 	}
 
+
 	public function test () {
+		$request = $this->application->getRequest();
+		$orderID =  $request->get('ID');
+
+		$order = CustomerOrder::getInstanceById($orderID, CustomerOrder::LOAD_DATA);
+		$service = new AppleAPNService($this->application);
+
+		$ret = $service->SendUserOrderMessage($order, 'Order is not active');
+
+		if($ret) {
+			throw new Exception('MESSAGE SUCCESS SEND');
+		} else {
+			throw new Exception('ERROR SENDING MESSAGE');
+		}
 		throw new Exception('CONFIG : ' . $this->application->config->get('NOTIFICATION_EMAIL'));
 	}
 

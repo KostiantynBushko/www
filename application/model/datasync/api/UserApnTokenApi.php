@@ -24,7 +24,54 @@ class UserApnTokenApi extends ModelApi {
             'UserApnToken',
             array() // fields to ignore in  model
         );
-        $this->addSupportedApiActionName('save');
+        $this->addSupportedApiActionName('save','send');
+    }
+
+    public function send() {
+        $request = $this->application->getRequest();
+
+        /*$userID = $request->get('userID');
+        $user_apn_token = UserApnToken::getInstanceByUserID($userID);
+
+        if(!isset($user_apn_token)) {
+            throw new Exception('Token for user ' . $userID . ' does not exist');
+        }
+        $user_apn_token->load(true);
+
+        $deviceToken = str_replace(' ', '', $user_apn_token->token->get()); '6c4766aaae648924b3d08511984bff348edcc1c478da50b2156d0729c7d04575';
+        $passphrase = 'illuminata';
+
+        $ctx = stream_context_create();
+        stream_context_set_option($ctx, 'ssl', 'local_cert', getcwd() . '/apple_apn/IlluminataDevCerAndKey.pem');
+        stream_context_set_option($ctx, 'ssl', 'passphrase', $passphrase);
+
+        // Open a connection to the APNS server
+        $fp = stream_socket_client('ssl://gateway.sandbox.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, $ctx);
+
+        if (!$fp) {
+            throw new Exception("Failed to connect: $err $errstr" . PHP_EOL);
+        }
+
+        //throw new Exception('Connected to APNS' . PHP_EOL);
+
+        $body['aps'] = array(
+            'alert' => 'Illuminata notification.',
+            'type' => '2',
+            'targetID' => '50292',
+            'url' => 'http://www.illuminataeyewear.ca',
+            'sound' => 'default'
+        );
+        $payload = json_encode($body);
+        $msg = chr(0) . pack('n', 32) . pack('H*', $deviceToken) . pack('n', strlen($payload)) . $payload;
+        $result = fwrite($fp, $msg, strlen($msg));
+
+        fclose($fp);
+
+        if (!$result)
+            throw new Exception('Message not delivered' . PHP_EOL);
+        else
+            throw new Exception('Message successfully delivered' . PHP_EOL);*/
+
     }
 
     public function save() {
@@ -37,7 +84,9 @@ class UserApnTokenApi extends ModelApi {
         }
 
         if(isset($userID) && intval($userID) > 0 ) {
+
             $user_apn_token = UserApnToken::getInstanceByUserID($userID);
+
             if(!isset($user_apn_token)) {
                 $user_apn_token = UserApnToken::getInstanceByToken($token);
                 if(!isset($user_apn_token)) {
@@ -48,9 +97,16 @@ class UserApnTokenApi extends ModelApi {
                     $user_apn_token->save();
                 }
             } else {
-                $user_apn_token = UserApnToken::getNewInstance($userID, $token);
+                $current_token = UserApnToken::getInstanceByToken($token);
+                if(isset($current_token)) {
+                    $current_token->delete();
+                    $current_token->save();
+                }
+                //$user_apn_token = UserApnToken::getNewInstance($userID, $token);
+                $user_apn_token->token->set($token);
                 $user_apn_token->save();
             }
+
         } else {
             $token = UserApnToken::getNewInstance(null, $token);
             $token->save();

@@ -19,6 +19,7 @@ class ProductApi extends ModelApi
 	{
 		return parent::canParse($request, array('XmlProductApiReader'));
 	}
+
 	public function __construct(LiveCart $application)
 	{
 		parent::__construct(
@@ -30,10 +31,18 @@ class ProductApi extends ModelApi
 		$this->addSupportedApiActionName('search');
 		$this->addSupportedApiActionName('az');
 		$this->addSupportedApiActionName('za');
+		$this->addSupportedApiActionName('za');
+		$this->addSupportedApiActionName('specification');
 	}
 
-	// ------
+	public function specification(){
+		$request = $this->application->getRequest();
+		$productID = $request->get('ID');
+		$product = Product::getInstanceByID($productID, Product::LOAD_DATA, Product::LOAD_REFERENCES);
+		$product->load();
 
+		throw new Exception(' product ' . json_encode($product->getSpecification()));
+	}
 
 	public function get()
 	{
@@ -64,8 +73,13 @@ class ProductApi extends ModelApi
 		$response = new LiveCartSimpleXMLElement('<response datetime="'.date('c').'"></response>');
 
 		$selFilter = $parser->getARSelectFilter();
-
 		$selFilter->setOrder(new ARExpressionHandle(('Product.ID')), 'DESC');
+		$selFilter->setOrder(new ARExpressionHandle(('Product.name')), 'ASC');
+		$isEnabled = $request->get('isEnabled');
+		if(isset($isEnabled)) {
+			$selFilter->mergeCondition(new EqualsCond(new ARFieldHandle('Product', 'isEnabled'), $isEnabled));
+		}
+		//$selFilter->mergeCondition(new NotEqualsCond(new ARFieldHandle('Product', 'stockCount'), $isEnabled));
 
 		$products = Product::getRecordSetArray(
 			'Product',
@@ -88,9 +102,17 @@ class ProductApi extends ModelApi
 
 		$selFilter = $parser->getARSelectFilter();
 		$selFilter->mergeCondition(new EqualsCond(new ARFieldHandle('Product', 'categoryID'), $request->get('categoryID')));
+		$selFilter->setOrder(new ARExpressionHandle(('Product.name')), 'ASC');
+		$isEnabled = $request->get('isEnabled');
+		if(isset($isEnabled)) {
+			$selFilter->mergeCondition(new EqualsCond(new ARFieldHandle('Product', 'isEnabled'), $isEnabled));
+		}
 
-		$selFilter->setOrder(new ARExpressionHandle(('Product.sku')), 'DESC');
-		$products = ActiveRecordModel::getRecordSetArray('Product', $selFilter, array('Category', 'Manufacturer', 'ProductImage'));
+		$selFilter->setOrder(new ARExpressionHandle(('Product.name')), 'DESC');
+		$products = ActiveRecordModel::getRecordSetArray(
+			'Product',
+			$selFilter,
+			array('Category', 'Manufacturer', 'ProductImage'));
 
 		foreach($products as $product) {
 			$this->fillResponseItem($response->addChild('product'), $product);
@@ -107,8 +129,12 @@ class ProductApi extends ModelApi
 
 		$selFilter = $parser->getARSelectFilter();
 		$selFilter->mergeCondition(new EqualsCond(new ARFieldHandle('Product', 'categoryID'), $request->get('categoryID')));
+		$selFilter->setOrder(new ARExpressionHandle(('Product.name')), 'ASC');
+		$isEnabled = $request->get('isEnabled');
+		if(isset($isEnabled)) {
+			$selFilter->mergeCondition(new EqualsCond(new ARFieldHandle('Product', 'isEnabled'), $isEnabled));
+		}
 
-		$selFilter->setOrder(new ARExpressionHandle(('Product.sku')), 'ASC');
 		$products = ActiveRecordModel::getRecordSetArray('Product', $selFilter, array('Category', 'Manufacturer', 'ProductImage'));
 
 		foreach($products as $product) {

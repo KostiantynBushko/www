@@ -457,6 +457,20 @@ class OrderedItem extends MultilingualObject implements BusinessRuleProductInter
 		return $choice;
 	}
 
+	public function addProductOptionChoice(ProductOptionChoice $choice) {
+		$choice = OrderedItemOption::getNewInstance($this, $choice);
+
+		$this->optionChoices[$choice->choice->get()->option->get()->getID()] = $choice;
+
+		if ($this->isFinalized())
+		{
+			$choice->updatePriceDiff();
+			$this->price->set($this->price->get() + $this->reduceBaseTaxes($choice->priceDiff->get()));
+		}
+
+		return $choice;
+	}
+
 	public function loadOption(OrderedItemOption $option)
 	{
 		$this->optionChoices[$option->choice->get()->option->get()->getID()] = $option;

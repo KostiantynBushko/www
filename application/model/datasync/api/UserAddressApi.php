@@ -39,7 +39,7 @@ class UserAddressApi extends ModelApi{
             throw new Exception('Address ID is required');
         }
 
-        $user_address = UserAddress::getInstanc-eById($id);
+        $user_address = UserAddress::getInstanceById($id);
 
         $firstName = $request->get('firstName');
         $lastName = $request->get('lastName');

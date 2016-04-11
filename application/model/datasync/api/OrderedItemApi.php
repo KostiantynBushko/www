@@ -9,6 +9,7 @@
 
 ClassLoader::import('application.model.datasync.ModelApi');
 ClassLoader::import('application.model.order.OrderedItem');
+ClassLoader::import('application.model.product.Product');
 ClassLoader::import('application.model.datasync.api.reader.XmlOrderedItemApiReader');
 ClassLoader::import('application.helper.LiveCartSimpleXMLElement');
 
@@ -45,7 +46,14 @@ class OrderedItemApi extends ModelApi{
         $order = CustomerOrder::getInstanceById($customerOrderID);
         $order->load(true);
         $order->loadAll();
-        $product = Product::getInstanceByID($productID);
+        //throw new Exception('order : ' . $order->getTotal(true));
+
+        $product = Product::getInstanceByID($productID,true, true);
+        $product->load(true);
+
+        //$variations = !$product->parent->get() ? $product->getVariationData($this->application) : array('1','2');
+
+        //throw new Exception('variation ' . json_encode($variations) . ' parent : ' . $product->getID() . ' productID ' . $productID);
 
         if(!$product->isAvailable()) {
             throw new Exception('Product '.$productID. ' is not Available ');   
@@ -57,15 +65,20 @@ class OrderedItemApi extends ModelApi{
             ActiveRecordModel::beginTransaction();
 
             $item = $order->addProduct($product,$count);
+
             if ($item instanceof OrderedItem)
             {
-
-                if ($order->isMultiAddress->get())
-                {
+                if ($order->isMultiAddress->get()) {
                     $item->save();
                 }
             }
-            $order->mergeItems();
+
+            if($product->parent->get()) {
+                $order->mergeItems();
+            } else {
+                $item->save();
+            }
+            //$order->mergeItems();
             $order->getTotal(true);
             $order->totalAmount->set($order->getTotal(true));
             $order->getTaxAmount();
@@ -75,6 +88,26 @@ class OrderedItemApi extends ModelApi{
         }
 
         $response = new LiveCartSimpleXMLElement('<response datetime="'.date('c').'"></response>');
+
+        if($item->getID() > 0) {
+            $parser = $this->getParser();
+            $apiFieldNames = $parser->getApiFieldNames();
+
+            $selFilter = new ARSelectFilter();
+            $selFilter->mergeCondition(new EqualsCond(new ARFieldHandle('OrderedItem', 'ID'), $item->getID()));
+
+            $orderedItem = OrderedItem::getRecordSetArray('OrderedItem', $selFilter);
+            while($item = array_shift($orderedItem)) {
+                $orderedItemXml = $response->addChild('ordered_item');
+                foreach ($item as $k => $v) {
+                    if (in_array($k, $apiFieldNames))                 // those who are allowed fields ($this->apiFieldNames) ?
+                    {
+                        $orderedItemXml->addChild($k, htmlentities($v));
+                    }
+                }
+            }
+        }
+
         return new SimpleXMLResponse($response);
     }
 
